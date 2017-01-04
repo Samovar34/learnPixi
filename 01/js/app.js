@@ -26,10 +26,10 @@ renderer.onresize = function () {
 PIXI.loader
     .add("box", "/assets/box.png")
     .add("/assets/tileset.png")
-    .on("progress", loadProgressHendler)
+    .on("progress", loadProgressHandler)
     .load(run);
 
-function loadProgressHendler(loader, resource) {
+function loadProgressHandler(loader, resource) {
 
     // показать url файла
     console.log("loading: " + resource.url);
