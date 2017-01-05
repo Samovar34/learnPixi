@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Группировка. Локальные и глобальные координаты</title>
+    <script src="/lib/pixi.min.js"></script>
+    <script src="js/alias.js"></script>
+    <style>
+        p {
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Группировка. Локальные и глобальные координаты</h1>
+    <div id="game"></div>
+    <div id="logs"></div>
+    <script>
+        var renderer = PIXI.autoDetectRenderer(384, 384, {
+            antialias: false,
+            transparent: false,
+            resolution: 1
+        });
+
+        document.getElementById("game").appendChild(renderer.view);
+
+        var logs = document.getElementById("logs");
+
+        loader
+                .add("box", "/assets/box.png")
+                .load(run);
+
+        function run() {
+            var stage = new Container();
+
+            var boxes = new Container();
+
+            var sprite0 = new Sprite(loader.resources["box"].texture);
+            sprite0.position.set(5, 5);
+            var sprite1 = new Sprite(loader.resources["box"].texture);
+            sprite1.position.set(15, 15);
+            var sprite2 = new Sprite(loader.resources["box"].texture);
+            sprite2.position.set(25, 25);
+
+            boxes.position.set(10, 10);
+
+            boxes.addChild(sprite0);
+            boxes.addChild(sprite1);
+            boxes.addChild(sprite2);
+
+            stage.addChild(boxes);
+
+            renderer.render(stage);
+
+            addMessage("---LOCAL---");
+            addMessage("sprite0: " + sprite0.x + ":" + sprite0.y + ";");
+            addMessage("sprite1: " + sprite1.x + ":" + sprite1.y + ";");
+            addMessage("sprite2: " + sprite2.x + ":" + sprite2.y + ";");
+
+            addMessage("---GLOBAL---");
+
+            var sprite0GlobalPos = boxes.toGlobal(sprite0.position);
+
+            var sprite1GlobalPos = sprite1.getGlobalPosition();
+
+            var sprite2GlobalPos = sprite2.parent.toGlobal(sprite2.position);
+
+            addMessage("sprite0: " + sprite0GlobalPos.x + ":" + sprite0GlobalPos.y + ";");
+            addMessage("sprite1: " + sprite1GlobalPos.x + ":" + sprite1GlobalPos.y + ";");
+            addMessage("sprite2: " + sprite2GlobalPos.x + ":" + sprite2GlobalPos.y + ";");
+
+            // to local
+            // sprite.toLocal(sprite.position, anyOtherSprite).x(y);
+
+        }
+
+        function addMessage(msg) {
+            var p = document.createElement("p");
+            var _msg = document.createTextNode(msg);
+
+            p.appendChild(_msg);
+            logs.appendChild(p);
+
+
+        }
+    </script>
+</body>
+</html>
