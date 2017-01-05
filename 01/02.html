@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Простое движение спрайта</title>
+    <script src="/lib/pixi.min.js"></script>
+</head>
+<body>
+<h1>Простое движение спрайта</h1>
+<div id="game"></div>
+<div>
+    <p>Используйте стрелки чтобы двигать ящик. Если нажать кнопку, отличную от стрелок движение прекратится</p>
+</div>
+<script>
+    // создаём рендер
+    var renderer = PIXI.autoDetectRenderer(256, 256, {
+        antialias: false,
+        transparent: false,
+        resolution: 1
+    });
+
+    var gameElem = document.getElementById("game");
+    gameElem.appendChild(renderer.view);
+
+    // alias
+    var loader = PIXI.loader;
+    var Sprite = PIXI.Sprite;
+    var TextureCache = PIXI.utils.TextureCache;
+    var Rectangle = PIXI.Rectangle;
+    var Container = PIXI.Container;
+
+    var keyCode = null;
+
+    var movement = {
+        37: {dx: -1, dy: 0},
+        38: {dx: 0, dy: -1},
+        39: {dx: 1, dy: 0},
+        40: {dx: 0, dy: 1}
+    };
+
+    loader
+        .add("box", "/assets/box.png")
+        .load(run);
+
+    window.onkeydown = function (e) {
+        keyCode = e.keyCode;
+        e.preventDefault();
+    };
+
+    function run() {
+        var sprite = new Sprite(loader.resources["box"].texture);
+        sprite.position.set(10, 10);
+
+        var stage = new Container();
+        stage.addChild(sprite);
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // create
+            var moveObj = movement[keyCode];
+
+            if (!moveObj) {
+                moveObj = {dx: 0, dy: 0};
+            }
+
+            // update
+            sprite.x += moveObj.dx;
+            sprite.y += moveObj.dy;
+
+            if (sprite.x+32 > renderer.view.width) {
+                sprite.x = renderer.view.width - 32;
+            } else if (sprite.x < 0) {
+                sprite.x = 0;
+            } else if (sprite.y+32 > renderer.view.height) {
+                sprite.y = renderer.view.height - 32;
+            } else if (sprite.y < 0) {
+                sprite.y = 0;
+            }
+
+            // render
+            renderer.render(stage);
+        }
+
+        animate();
+    }
+
+
+
+
+</script>
+</body>
+</html>

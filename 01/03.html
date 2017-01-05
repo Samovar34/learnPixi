@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Keyboard movement</title>
+    <script src="/lib/pixi.min.js"></script>
+    <script src="js/alias.js"></script>
+</head>
+<body>
+    <h1>Keyboard movement</h1>
+    <div id="game"></div>
+    <div></div>
+    <script>
+        var renderer = PIXI.autoDetectRenderer(384, 384, {
+            antialias: false,
+            transparent: false,
+            resolution: 1
+        });
+
+        document.getElementById("game").appendChild(renderer.view);
+
+        loader
+            .add("box", "/assets/box.png")
+            .load(run);
+
+        function run() {
+            var stage = new Container();
+
+            var sprite = new Sprite(loader.resources["box"].texture);
+
+            var dx = 0;
+            var dy = 0;
+
+            var left  = keyboard(37),
+                up    = keyboard(38),
+                right = keyboard(39),
+                down  = keyboard(40);
+
+            // обработчики нажатий
+
+            left.press = function () {
+                dx = -1;
+
+            };
+
+            left.release = function () {
+                if (!right.isDown) {
+                    dx = 0;
+                }
+            };
+
+            up.press = function () {
+                dy = -1;
+            };
+
+            up.release = function () {
+                dy = 0;
+            };
+
+            right.press = function () {
+                dx = 1;
+            };
+
+            right.release = function () {
+                if (!left.isDown) {
+                    dx = 0;
+                }
+            };
+
+            down.press = function () {
+                dy = 1;
+            };
+
+            down.release = function () {
+                dy = 0;
+            };
+
+            stage.addChild(sprite);
+
+            function gameLoop() {
+                requestAnimationFrame(gameLoop);
+
+                sprite.x += dx;
+                sprite.y += dy;
+
+                renderer.render(stage);
+            }
+
+            gameLoop();
+        }
+
+        function keyboard(keyCode) {
+            var key = {};
+            key.code = keyCode;
+            key.isDown = false;
+            key.isUp = true;
+            key.press = undefined;
+            key.release = undefined;
+
+            key.downHandler = function (e) {
+                // проверить нажатую клавишу
+                if (e.keyCode === key.code) {
+                    // если кнопка не нажата и есть обработчик press
+                    if (key.isUp && key.press) {
+                        key.press();
+                    }
+                    key.isDown = true;
+                    key.isUp = false;
+                }
+
+                // отмена действия по умолчанию
+                e.preventDefault();
+            };
+
+            key.upHandler = function (e) {
+                // проверить нажатую клавишу
+                if (e.keyCode === key.code) {
+                    // если кнопка нажата и есть обработчик release
+                    if (key.isDown && key.release) {
+                        key.release();
+                    }
+                    key.isDown = false;
+                    key.isUp = true;
+                }
+
+                // отмена действия по умолчанию
+                e.preventDefault();
+            };
+
+            // добавить обработчики событий к объекту window
+            window.addEventListener("keydown", key.downHandler.bind(key), false);
+            window.addEventListener("keyup", key.upHandler.bind(key), false);
+
+            return key;
+        }
+    </script>
+</body>
+</html>
